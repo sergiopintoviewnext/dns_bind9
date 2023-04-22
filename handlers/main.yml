@@ -1,7 +1,7 @@
 ---
 
 - name: Reiniciar servicio Debian
-  service:
+  ansible.builtin.service:
     name: named
     state: restarted
 

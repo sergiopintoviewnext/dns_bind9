@@ -8,7 +8,7 @@
 
 
 - name: Iniciar servicio
-  service:
+  ansible.builtin.service:
     name: named
     state: started
     enabled: true
