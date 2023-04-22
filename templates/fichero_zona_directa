@@ -1,0 +1,32 @@
+$TTL {{ ttl_directo }}
+$ORIGIN {{ dominio_directo }}.
+
+@       IN      SOA     {{ servidor_zona }}.{{ dominio_directo }}. {{ mail_zona }}.{{ dominio_directo }}. (
+                         {{ serial_directo }}     ; Serial
+                         {{ refresh_directo }}            ; Refresh
+                         {{ retry_directo }}            ; Retry
+                         {{ expire_directo }}             ; Expire
+                         {{ negative_cache_directo }}             ; Negative Cache TTL
+                         )
+
+;Servidores DNS del dominio
+
+        IN      NS      {{ servidor_zona }}.{{ dominio_directo }}.
+
+;hosts
+
+{% for i in hosts_directo %}
+{{ i.nombre }}  IN      A       {{ i.ip }}
+{% endfor %}
+
+;alias
+
+{% for i in alias %}
+{{ i.alias }}   IN      CNAME   {{ i.nombre }}
+{% endfor %}
+
+;servidores de correo
+
+{% for i in correo %}
+@       IN      MX      {{ i.prioridad }}       {{ i.nombre }}
+{% endfor %}

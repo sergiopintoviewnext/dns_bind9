@@ -1,0 +1,116 @@
+---
+
+- name: Instalar bind9
+  ansible.builtin.apt:
+    name: bind9
+    state: present
+    update_cache: true
+
+
+- name: Iniciar servicio
+  service:
+    name: named
+    state: started
+    enabled: true
+
+
+- name: Copiar fichero /etc/bind/named.conf.options
+  ansible.builtin.template:
+    src: named.conf.options
+    dest: /etc/bind/named.conf.options
+    owner: root
+    group: bind
+    mode: '0644'
+  notify: Reiniciar servicio Debian
+  
+
+- name: Comprobar sintaxis fichero /etc/bind/named.conf.options
+  ansible.builtin.command:
+    cmd: named-checkconf /etc/bind/named.conf.options
+  register: options
+  failed_when: options.changed == "false"
+  changed_when: false
+
+
+- name: Debug /etc/bind/named.conf.options
+  ansible.builtin.debug:
+    msg: "{{ options.stdout_lines }}"
+  failed_when: options.rc == 1
+  when: options.rc == 1
+
+
+- name: Copiar fichero /etc/bind/named.conf.local
+  ansible.builtin.template:
+    src: named.conf.local
+    dest: /etc/bind/named.conf.local
+    owner: root
+    group: bind
+    mode: '0644'
+  notify: Reiniciar servicio Debian  
+
+
+- name: Comprobar sintaxis fichero /etc/bind/named.conf.local
+  ansible.builtin.command:
+    cmd: named-checkconf /etc/bind/named.conf.local
+  register: local
+  failed_when: local.changed == "false"
+  changed_when: false
+
+
+- name: Debug /etc/bind/named.conf.local
+  ansible.builtin.debug:
+    msg: "{{ local.stdout_lines }}"
+  failed_when: local.rc == 1
+  when: local.rc == 1
+
+
+- name: Copiar fichero zona directa
+  ansible.builtin.template:
+    src: fichero_zona_directa
+    dest: /etc/bind/{{ file_directo }}
+    owner: root
+    group: bind
+    mode: '0644'
+  notify: Reiniciar servicio Debian
+
+
+- name: Comprobar sintaxis fichero zona directa
+  ansible.builtin.command:
+    cmd: named-checkzone {{ dominio_directo }} /etc/bind/{{ file_directo }}
+  register: directo
+  failed_when: directo.changed == "false"
+  changed_when: false
+
+
+- name: Debug fichero zona directa
+  ansible.builtin.debug:
+    msg: "{{ directo.stdout_lines }}"
+  failed_when: directo.rc == 1
+  when: directo.rc == 1
+
+
+- name: Copiar fichero zona inversa
+  ansible.builtin.template:
+    src: fichero_zona_inversa
+    dest: /etc/bind/{{ file_inverso }}
+    owner: root
+    group: bind
+    mode: '0644'
+  notify: Reiniciar servicio Debian
+
+
+- name: Comprobar sintaxis fichero zona inversa
+  ansible.builtin.command:
+    cmd: named-checkzone {{ dominio_inverso }} /etc/bind/{{ file_inverso }}
+  register: inverso
+  failed_when: inverso.changed == "false"
+  changed_when: false
+
+
+- name: Debug fichero zona inverso
+  ansible.builtin.debug:
+    msg: "{{ inverso.stdout_lines }}"
+  failed_when: inverso.rc == 1
+  when: inverso.rc == 1   
+
+...

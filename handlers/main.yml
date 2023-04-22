@@ -1,0 +1,8 @@
+---
+
+- name: Reiniciar servicio Debian
+  service:
+    name: named
+    state: restarted
+
+...

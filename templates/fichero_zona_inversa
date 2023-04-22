@@ -1,0 +1,19 @@
+$TTL {{ ttl_inverso }}
+$ORIGIN {{ dominio_inverso }}.
+
+@       IN      SOA     {{ servidor_zona }}.{{ dominio_directo }}. {{ mail_zona }}.{{ dominio_directo }}. (
+                            {{ serial_inverso }}
+                            {{ refresh_inverso }}
+                            {{ retry_inverso }}
+                            {{ expire_inverso }}
+                            {{ negative_cache_inverso }}
+                            )
+
+        IN      NS      {{ servidor_zona }}.{{ dominio_directo }}.
+
+;hosts
+
+{% for i in hosts_inverso %}
+{{ i.host }}    IN      PTR     {{ i.nombre }}.{{ dominio_directo }}.
+{% endfor %}
+
