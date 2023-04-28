@@ -1,0 +1,23 @@
+---
+
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - main.yml
+  tasks:
+    - name: Instalar bind9
+      ansible.builtin.apt:
+        name: bind9
+        state: present
+        update_cache: true
+      when: ansible_distribution == "Debian"        
+
+    - name: Iniciar servicio
+      ansible.builtin.service:
+        name: named
+        state: started
+        enabled: true
+      when: ansible_distribution == "Debian"  
+
+...

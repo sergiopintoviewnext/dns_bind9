@@ -2,9 +2,39 @@
 # This is an example playbook to execute Ansible tests.
 
 - name: Verify
-  hosts: all
-  gather_facts: false
+  hosts: All
+  gather_facts: true
+  vars_files:
+    - main.yml
   tasks:
-  - name: Example assertion
-    ansible.builtin.assert:
-      that: true
+
+  - name: Instalar dnsutils Debian
+    apt:
+      name: dnsutils
+      state: present
+    when: ansible_distribution == "Debian"  
+
+  - name: Instalar bind-utils RedHat
+    yum:
+      name: bind-utils
+      state: present
+    when: ansible_distribution == "RedHat"
+
+  - name: añadir servidor a /etc/resolv.conf
+    ansible.builtin.shell:
+      cmd: echo nameserver 127.0.0.1 > /etc/resolv.conf
+    register: comando
+    changed_when: false
+
+  - name: Comprobar servidor DNS
+    command:
+      cmd: "nslookup {{ servidor_zona }}.{{ dominio_directo }}"
+    register: resolucion
+    when: comando.rc == 0
+    changed_when: false
+
+  - name: Verificar comando
+    assert:
+      that: resolucion.rc == 0 and "server can't find" not in comando.stdout 
+      success_msg: "Servidor funcionando correctamente"
+      fail_msg: "ERROR en funcionamiento"

@@ -1,0 +1,101 @@
+# /etc/bind/named.conf.options
+dns: 
+  - 8.8.8.8
+  - 8.8.4.4
+
+
+# /etc/bind/named.conf.local. Zona directa
+dominio_directo: sergiopinto01.es
+type_directo: master
+file_directo: db.sergiopinto01.es
+
+
+# /etc/bind/named.conf.local. Zona inversa
+dominio_inverso: 0.17.172.in-addr-arpa
+type_inverso: master
+file_inverso: db.172.17.0
+
+
+
+servidor_zona: ns1
+mail_zona: admin
+
+
+# fichero zona directa
+
+ttl_directo: 2d
+
+serial_directo: 2016040800
+refresh_directo: 12h
+retry_directo: 15m
+expire_directo: 3w
+negative_cache_directo: 2h
+
+hosts_directo:
+  - {
+    nombre: ns1,
+    ip: 172.17.0.3
+  }
+
+  - {
+    nombre: www,
+    ip: 172.17.0.30
+  }
+
+  - {
+    nombre: correo,
+    ip: 172.17.0.31
+  }
+
+  - {
+    nombre: cloud,
+    ip: 172.17.0.32
+  }  
+
+alias:
+
+  - {
+    alias: ftp,    
+    nombre: www
+  }
+
+correo:
+
+  - {
+    prioridad: 10,
+    nombre: correo
+  }
+
+
+# fichero zona inversa
+
+ttl_inverso: 2d
+
+serial_inverso: 1
+refresh_inverso: 604800
+retry_inverso: 86400
+expire_inverso: 2419200
+negative_cache_inverso: 604800
+
+
+hosts_inverso:
+  - {
+    nombre: ns1,
+    host: 3
+  }
+  - {
+    nombre: www,
+    host: 30
+  }
+  - {
+    nombre: correo,
+    host: 31
+  }
+  - {
+    nombre: cloud,
+    host: 32
+  }
+  - {
+    nombre: ftp,
+    host: 32
+  }
