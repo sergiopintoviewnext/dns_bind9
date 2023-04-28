@@ -11,7 +11,7 @@ file_directo: db.sergiopinto01.es
 
 
 # /etc/bind/named.conf.local. Zona inversa
-dominio_inverso: 0.17.172.in-addr-arpa
+dominio_inverso: 0.17.172.in-addr.arpa
 type_inverso: master
 file_inverso: db.172.17.0
 

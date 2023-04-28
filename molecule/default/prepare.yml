@@ -6,12 +6,33 @@
   vars_files:
     - main.yml
   tasks:
-    - name: Instalar bind9
+    - name: Instalar bind9 Debian
       ansible.builtin.apt:
         name: bind9
         state: present
         update_cache: true
-      when: ansible_distribution == "Debian"        
+      when: ansible_distribution == "Debian"
+
+
+    - name: Añadir repo centos8 Appstream
+      ansible.builtin.yum_repository:
+        name: centos8-Appstream
+        baseurl: http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/
+        description: repositorio centos8 Appstream
+      when: ansible_distribution == "RedHat"         
+
+
+    - name: Instalar bind Redhat
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+        disable_gpg_check: true        
+      when: ansible_distribution == "RedHat"          
+      with_items:
+        - bind
+        - bind-utils
+
 
     - name: Iniciar servicio
       ansible.builtin.service:

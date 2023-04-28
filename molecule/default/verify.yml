@@ -2,7 +2,7 @@
 # This is an example playbook to execute Ansible tests.
 
 - name: Verify
-  hosts: All
+  hosts: all
   gather_facts: true
   vars_files:
     - main.yml
@@ -14,11 +14,13 @@
       state: present
     when: ansible_distribution == "Debian"  
 
+
   - name: Instalar bind-utils RedHat
     yum:
       name: bind-utils
       state: present
     when: ansible_distribution == "RedHat"
+
 
   - name: añadir servidor a /etc/resolv.conf
     ansible.builtin.shell:
@@ -26,15 +28,36 @@
     register: comando
     changed_when: false
 
-  - name: Comprobar servidor DNS
+
+  - name: Comprobar servidor DNS directo
     command:
-      cmd: "nslookup {{ servidor_zona }}.{{ dominio_directo }}"
-    register: resolucion
+      cmd: "nslookup {{ item.nombre }}.{{ dominio_directo }}"
+    register: resolucion_directa
     when: comando.rc == 0
     changed_when: false
+    with_items: "{{ hosts_directo }}"
+
 
   - name: Verificar comando
     assert:
-      that: resolucion.rc == 0 and "server can't find" not in comando.stdout 
+      that: item.rc == 0 and "server can't find" not in item.stdout 
       success_msg: "Servidor funcionando correctamente"
       fail_msg: "ERROR en funcionamiento"
+    with_items: "{{ resolucion_directa.results }}"
+
+
+  - name: Comprobar servidor DNS inverso
+    command:
+      cmd: "nslookup {{ item.ip }}"
+    register: resolucion_inversa
+    when: comando.rc == 0
+    changed_when: false
+    with_items: "{{ hosts_directo }}"
+
+
+  - name: Verificar comando
+    assert:
+      that: item.rc == 0 and "server can't find" not in item.stdout 
+      success_msg: "Servidor funcionando correctamente"
+      fail_msg: "ERROR en funcionamiento"
+    with_items: "{{ resolucion_inversa.results }}"    

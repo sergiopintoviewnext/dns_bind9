@@ -4,4 +4,9 @@
   ansible.builtin.include_tasks: debian.yml
   when: ansible_distribution == "Debian"
 
+
+- name: Incluir redhat.yml
+  ansible.builtin.include_tasks: redhat.yml
+  when: ansible_distribution == "RedHat"  
+
 ...

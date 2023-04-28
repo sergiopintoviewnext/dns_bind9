@@ -6,12 +6,14 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "{{ dominio_directo }}" {
+zone "{{ dominio_directo }}" {% if ansible_distribution == "RedHat" %}IN{%endif%} {
     type {{ type_directo }};
-    file "/etc/bind/{{ file_directo }}";
+    {% if ansible_distribution == "Debian" %}file "/etc/bind/{{ file_directo }}";{%endif%}
+    {% if ansible_distribution == "RedHat" %}file "/var/named/{{ file_directo }}";{%endif%}
 };
 
-zone "{{ dominio_inverso }}" {
+zone "{{ dominio_inverso }}" {% if ansible_distribution == "RedHat" %}IN{%endif%} {
     type {{ type_inverso }};
-    file "/etc/bind/{{ file_inverso }}";
+    {% if ansible_distribution == "Debian" %}file "/etc/bind/{{ file_inverso }}";{%endif%}
+    {% if ansible_distribution == "RedHat" %}file "/var/named/{{ file_inverso }}";{%endif%}    
 };
